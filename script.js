@@ -13,10 +13,10 @@ const btnText = document.querySelector('.btn-text');
 const btnSpinner = document.querySelector('.btn-spinner');
 
 // API endpoints - multiple proxies for better mobile compatibility
+// AllOrigins works on both mobile and laptop, CodeTabs works on laptop
 const corsProxies = [
     "https://api.allorigins.win/raw?url=",
-    "https://api.codetabs.com/v1/proxy?quest=",
-    "https://corsproxy.io/?"
+    "https://api.codetabs.com/v1/proxy?quest="
 ];
 const apiUrl = "https://truecaller.underthedesk.blog/api?q=+91";
 
