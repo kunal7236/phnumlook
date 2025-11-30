@@ -12,8 +12,12 @@ const newSearchBtn = document.getElementById('newSearchBtn');
 const btnText = document.querySelector('.btn-text');
 const btnSpinner = document.querySelector('.btn-spinner');
 
-// API endpoints
-const corsProxy = "https://api.codetabs.com/v1/proxy?quest=";
+// API endpoints - multiple proxies for better mobile compatibility
+const corsProxies = [
+    "https://api.allorigins.win/raw?url=",
+    "https://api.codetabs.com/v1/proxy?quest=",
+    "https://corsproxy.io/?"
+];
 const apiUrl = "https://truecaller.underthedesk.blog/api?q=+91";
 
 // Character formatting for phone input
@@ -67,40 +71,71 @@ lookupForm.addEventListener('submit', async (e) => {
     await lookupPhoneNumber(phoneNumber);
 });
 
-// Phone number lookup function
+// Phone number lookup function with fallback proxies
 async function lookupPhoneNumber(phoneNumber) {
     setLoadingState(true);
     
-    try {
-        const response = await fetch(corsProxy + encodeURIComponent(apiUrl + phoneNumber));
+    let lastError = null;
+    
+    // Try each proxy in sequence until one works
+    for (let i = 0; i < corsProxies.length; i++) {
+        const proxy = corsProxies[i];
+        console.log(`Attempting with proxy ${i + 1}/${corsProxies.length}: ${proxy}`);
         
-        if (!response.ok) {
-            throw new Error(`Server responded with ${response.status}`);
+        try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+            
+            const response = await fetch(proxy + encodeURIComponent(apiUrl + phoneNumber), {
+                signal: controller.signal,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+            
+            clearTimeout(timeoutId);
+            
+            if (!response.ok) {
+                throw new Error(`Server responded with ${response.status}`);
+            }
+            
+            const data = await response.json();
+            console.log('API Response:', data);
+            
+            displayResults(data, phoneNumber);
+            setLoadingState(false);
+            return; // Success - exit function
+            
+        } catch (error) {
+            console.error(`Proxy ${i + 1} failed:`, error);
+            lastError = error;
+            
+            // If this isn't the last proxy, continue to next one
+            if (i < corsProxies.length - 1) {
+                console.log('Trying next proxy...');
+                continue;
+            }
         }
-        
-        const data = await response.json();
-        console.log('API Response:', data);
-        
-        displayResults(data, phoneNumber);
-        
-    } catch (error) {
-        console.error('Lookup error:', error);
-        
-        let errorMsg = 'Failed to lookup phone number. ';
-        if (error.message.includes('fetch')) {
-            errorMsg += 'Please check your internet connection.';
-        } else if (error.message.includes('404')) {
-            errorMsg += 'Phone number not found.';
-        } else if (error.message.includes('500')) {
-            errorMsg += 'Service temporarily unavailable.';
-        } else {
-            errorMsg += 'Please try again later.';
-        }
-        
-        showError(errorMsg);
-    } finally {
-        setLoadingState(false);
     }
+    
+    // All proxies failed
+    console.error('All proxies failed. Last error:', lastError);
+    
+    let errorMsg = 'Failed to lookup phone number. ';
+    if (lastError.name === 'AbortError') {
+        errorMsg += 'Request timed out. Please check your internet connection.';
+    } else if (lastError.message.includes('fetch') || lastError.message.includes('network')) {
+        errorMsg += 'Please check your internet connection and try again.';
+    } else if (lastError.message.includes('404')) {
+        errorMsg += 'Phone number not found.';
+    } else if (lastError.message.includes('500')) {
+        errorMsg += 'Service temporarily unavailable.';
+    } else {
+        errorMsg += 'Please try again later.';
+    }
+    
+    showError(errorMsg);
+    setLoadingState(false);
 }
 
 // Display loading state
