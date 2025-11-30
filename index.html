@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phone Lookup Tool</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%232563eb%22><path d=%22M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2a1 1 0 011.11-.27 11.36 11.36 0 003.48.56 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1 11.36 11.36 0 00.56 3.48 1 1 0 01-.27 1.11z%22/></svg>">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-inner">
+                <h1 class="title">Phone Lookup</h1>
+                <p class="tagline">Find information about any phone number</p>
+
+            </div>
+        </header>
+
+        <main class="main">
+            <div class="app-card">
+                <form class="lookup-form" id="lookupForm">
+                    <div class="form-header">
+                        <h2 class="form-title">Phone Number</h2>
+                        <p class="form-help">Enter the number you want to lookup</p>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="PhNum" class="input-label">Phone Number</label>
+                        <input 
+                            type="text" 
+                            id="PhNum"
+                            class="phone-input"
+                            placeholder="9XXXXXXXXX"
+                            maxlength="10"
+                        />
+
+                    </div>
+
+                    <button type="submit" id="sbmtbtn" class="action-btn">
+                        <span class="btn-text">Lookup Number</span>
+                        <div class="btn-spinner" style="display: none;">
+                            <div class="spinner-dot"></div>
+                            <div class="spinner-dot"></div>
+                            <div class="spinner-dot"></div>
+                        </div>
+                    </button>
+                </form>
+
+                <div class="results-section" id="resultsSection" style="display: none;">
+                    <div class="results-header">
+                        <h2 class="results-title">Lookup Results</h2>
+                        <p class="results-subtitle">Information found for this number</p>
+                    </div>
+
+                    <div class="result-card" id="resultCard">
+                        <div class="result-header">
+                            <h3 class="result-title">
+                                <span class="result-icon">📞</span>
+                                Phone Details
+                            </h3>
+                            <span class="result-number" id="resultNumber">-</span>
+                        </div>
+                        
+                        <div class="result-content" id="resultContent">
+                            <!-- Results will be populated here -->
+                        </div>
+                    </div>
+
+                    <button type="button" id="newSearchBtn" class="secondary-btn">
+                        ← Search Another Number
+                    </button>
+                </div>
+
+                <div class="error-section" id="errorSection" style="display: none;">
+                    <div class="error-card">
+                        <div class="error-icon">⚠️</div>
+                        <div class="error-content">
+                            <h4 class="error-title">Search Error</h4>
+                            <p class="error-message" id="errorMessage"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
